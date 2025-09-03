@@ -121,6 +121,15 @@ const JournalApp = () => {
           <span>✨</span>
         </h1>
         <p className="text-gray-600">记录每一天的美好时光</p>
+        <div className="mt-4">
+          <a
+            href="/docs"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-400 to-indigo-400 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+          >
+            <span>🤖</span>
+            API Documentation
+          </a>
+        </div>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8">
