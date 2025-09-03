@@ -113,7 +113,7 @@ const JournalApp = () => {
   const isDateToday = isToday(parseISO(selectedDate));
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 min-h-screen">
+    <div className="max-w-6xl mx-auto p-6 bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50 min-h-screen">
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-3">
           <span>📖</span>
@@ -124,7 +124,7 @@ const JournalApp = () => {
         <div className="mt-4">
           <a
             href="/docs"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-400 to-indigo-400 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-400 to-blue-400 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
           >
             <span>🤖</span>
             API Documentation
@@ -145,11 +145,11 @@ const JournalApp = () => {
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+              className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent text-gray-700 bg-white"
             />
             {isDateToday && (
               <div className="mt-3 text-center">
-                <span className="inline-flex items-center gap-1 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 text-sm px-3 py-1 rounded-full">
+                <span className="inline-flex items-center gap-1 bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-800 text-sm px-3 py-1 rounded-full">
                   🌟 今天
                 </span>
               </div>
@@ -160,7 +160,7 @@ const JournalApp = () => {
           <div className="bg-white rounded-2xl shadow-xl p-6">
             <button
               onClick={() => setIsWriting(!isWriting)}
-              className="w-full bg-gradient-to-r from-purple-400 to-pink-400 text-white px-6 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-blue-400 to-cyan-400 text-white px-6 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2"
             >
               <Plus className="w-5 h-5" />
               {isWriting ? '取消写作' : '写新日记'}
@@ -182,13 +182,13 @@ const JournalApp = () => {
                   placeholder="今天的标题... 📝"
                   value={newEntry.title}
                   onChange={(e) => setNewEntry(prev => ({ ...prev, title: e.target.value }))}
-                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent placeholder:text-gray-500"
+                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent placeholder:text-gray-500 text-gray-700 bg-white"
                 />
 
                 <select
                   value={newEntry.mood}
                   onChange={(e) => setNewEntry(prev => ({ ...prev, mood: e.target.value }))}
-                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent text-gray-700"
+                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent text-gray-700 bg-white"
                 >
                   <option value="" className="text-gray-500">选择今天的心情... 💫</option>
                   {Object.entries(moodEmojis).map(([mood, emoji]) => (
@@ -203,7 +203,7 @@ const JournalApp = () => {
                   placeholder="标签 (用逗号分隔)... 🏷️"
                   value={newEntry.tags}
                   onChange={(e) => setNewEntry(prev => ({ ...prev, tags: e.target.value }))}
-                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent placeholder:text-gray-500"
+                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent placeholder:text-gray-500 text-gray-700 bg-white"
                 />
 
                 <textarea
@@ -211,13 +211,13 @@ const JournalApp = () => {
                   value={newEntry.content}
                   onChange={(e) => setNewEntry(prev => ({ ...prev, content: e.target.value }))}
                   rows={8}
-                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-transparent resize-none placeholder:text-gray-500"
+                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent resize-none placeholder:text-gray-500 text-gray-700 bg-white"
                 />
 
                 <button
                   onClick={saveEntry}
                   disabled={!newEntry.content.trim()}
-                  className="w-full bg-gradient-to-r from-green-400 to-blue-400 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full bg-gradient-to-r from-teal-400 to-blue-400 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   <Sparkles className="w-5 h-5" />
                   保存这一刻
@@ -293,7 +293,7 @@ const JournalApp = () => {
                         {entry.metadata.tags.map((tag, idx) => (
                           <span
                             key={idx}
-                            className="inline-flex items-center gap-1 bg-purple-100 text-purple-800 text-xs px-3 py-1 rounded-full"
+                            className="inline-flex items-center gap-1 bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full"
                           >
                             🏷️ {tag}
                           </span>
