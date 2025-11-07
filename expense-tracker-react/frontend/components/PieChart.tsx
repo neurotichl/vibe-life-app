@@ -13,7 +13,7 @@ export function PieChart({ data }: PieChartProps) {
 
   if (total === 0) {
     return (
-      <div className="flex items-center justify-center h-64 text-ocean-500">
+      <div className="flex items-center justify-center h-64 text-muted-custom">
         No data to display
       </div>
     )
@@ -70,7 +70,7 @@ export function PieChart({ data }: PieChartProps) {
           x="100"
           y="95"
           textAnchor="middle"
-          className="text-xs font-semibold fill-ocean-700"
+          className="text-xs font-semibold fill-[hsl(var(--heading-section))]"
         >
           Total
         </text>
@@ -78,7 +78,7 @@ export function PieChart({ data }: PieChartProps) {
           x="100"
           y="110"
           textAnchor="middle"
-          className="text-sm font-bold fill-ocean-600"
+          className="text-sm font-bold fill-[hsl(var(--text-body))]"
         >
           RM {total.toFixed(0)}
         </text>
@@ -93,10 +93,10 @@ export function PieChart({ data }: PieChartProps) {
               style={{ backgroundColor: slice.color }}
             />
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-ocean-700 truncate">
+              <p className="text-xs font-medium heading-section truncate">
                 {slice.label}
               </p>
-              <p className="text-xs text-ocean-500">
+              <p className="text-xs text-muted-custom">
                 {slice.percentage.toFixed(1)}% • RM {slice.value.toFixed(0)}
               </p>
             </div>

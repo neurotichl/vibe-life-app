@@ -14,6 +14,7 @@ import {
   updateExpense,
   getExpenseSummary,
   getSpendingByCategory,
+  getSpendingBySubcategory,
   getDailySpending,
   getBudgets,
   updateBudgets,
@@ -30,7 +31,7 @@ import {
   type MonthOption,
 } from '@/lib/api'
 import { formatCurrency, formatDate, getCurrentMonth, getMonthDates, cn } from '@/lib/utils'
-import { PieChart } from '@/components/PieChart'
+import { NestedPieChart } from '@/components/NestedPieChart'
 import { LineChart } from '@/components/LineChart'
 
 type Tab = 'dashboard' | 'add' | 'budget' | 'recurring' | 'history'
@@ -41,6 +42,7 @@ export default function Home() {
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [summary, setSummary] = useState<any>(null)
   const [spending, setSpending] = useState<Record<string, number>>({})
+  const [subcategorySpending, setSubcategorySpending] = useState<Array<{ category: string; subcategory: string; total: number }>>([])
   const [daily, setDaily] = useState<Array<{ date: string; amount: number }>>([])
   const [loading, setLoading] = useState(true)
   const [refreshKey, setRefreshKey] = useState(0)
@@ -103,12 +105,13 @@ export default function Home() {
       // Get date range for selected month
       const monthDates = getMonthDates(selectedMonth)
 
-      const [categoriesRes, monthsRes, expensesRes, summaryRes, spendingRes, dailyRes, budgetsRes, comparisonRes, fullComparisonRes, recurringRes, statusRes] = await Promise.all([
+      const [categoriesRes, monthsRes, expensesRes, summaryRes, spendingRes, subcategoryRes, dailyRes, budgetsRes, comparisonRes, fullComparisonRes, recurringRes, statusRes] = await Promise.all([
         getCategories(),
         getAvailableMonths(),
         getExpenses(monthDates.start, monthDates.end), // Filter expenses by selected month for History tab
         getExpenseSummary(monthDates.start, monthDates.end, true), // Exclude recurring for score cards (floating only)
         getSpendingByCategory(monthDates.start, monthDates.end, false), // Include ALL expenses (including recurring) for pie chart
+        getSpendingBySubcategory(monthDates.start, monthDates.end), // Get subcategory data for nested chart
         getDailySpending(monthDates.start, monthDates.end), // Excludes recurring by default for trend analysis
         getBudgets(selectedMonth),
         getBudgetComparison(selectedMonth, true),  // Exclude recurring for floating budget comparison
@@ -122,6 +125,7 @@ export default function Home() {
       setExpenses(expensesRes.expenses)
       setSummary(summaryRes.summary)
       setSpending(spendingRes.spending)
+      setSubcategorySpending(subcategoryRes.spending)
       setDaily(dailyRes.daily)
       setBudgets(budgetsRes.budgets)
       setBudgetComparison(comparisonRes)
@@ -398,7 +402,7 @@ export default function Home() {
       </div>
 
       {/* Tabs Navigation */}
-      <div className="flex space-x-2 border-b border-pastel-300 pb-2">
+      <div className="flex space-x-2 border-b border-theme-medium pb-2">
         {tabs.map(tab => (
           <button
             key={tab.id}
@@ -406,7 +410,7 @@ export default function Home() {
             className={cn(
               "px-4 py-2 rounded-t-lg font-medium transition-all",
               activeTab === tab.id
-                ? "bg-pastel-pink text-pastel-900 shadow-md"
+                ? "bg-primary text-primary-foreground shadow-md"
                 : "bg-white/60 heading-section hover:bg-pastel-lavender/30"
             )}
           >
@@ -456,28 +460,21 @@ export default function Home() {
 
           {/* Two Column Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Spending by Category - PIE CHART */}
+            {/* Spending by Category - NESTED PIE CHART */}
             <Card>
               <CardHeader>
-                <CardTitle>🥧 Spending by Category</CardTitle>
-                <CardDescription>Visual breakdown of all your expenses (includes recurring)</CardDescription>
+                <CardTitle>🥧 Spending Breakdown</CardTitle>
+                <CardDescription>Double-layer view: categories (inner) and subcategories (outer)</CardDescription>
               </CardHeader>
               <CardContent>
-                <PieChart
-                  data={Object.entries(spending).map(([category, amount], idx) => ({
-                    label: category,
-                    value: amount,
-                    color: [
-                      '#BDE0FE', // Uranian Blue (pastel-blue)
-                      '#FFC8DD', // Fairy Tale (pastel-pink)
-                      '#FFAFCC', // Carnation Pink (pastel-rose)
-                      '#D8F7F2', // Mint Green (pastel-mint)
-                      '#CDB4DB', // Thistle (pastel-lavender)
-                      '#90B8F8', // Light blue (ocean-300)
-                      '#5B9DF7', // Medium blue (ocean-400)
-                      '#A69BC1', // Darker lavender (pastel-700)
-                    ][idx % 8]
-                  }))}
+                <NestedPieChart
+                  data={subcategorySpending}
+                  categoryColors={{
+                    '固定支出 (Fixed Expenses)': '#BDE0FE',
+                    '生活必要支出 (Essential Living)': '#FFC8DD',
+                    '生活质量支出 (Quality of Life)': '#FFAFCC',
+                    '基金 (Fund/Savings)': '#D8F7F2',
+                  }}
                 />
               </CardContent>
             </Card>
@@ -492,7 +489,7 @@ export default function Home() {
                 {budgetComparison && recurringStatus && fullBudgetComparison ? (
                   <div className="space-y-4">
                     {/* Total Summary - Floating Budget */}
-                    <div className="p-4 bg-pastel-50 rounded-lg space-y-2">
+                    <div className="p-4 bg-theme-surface rounded-lg space-y-2">
                       <div className="flex justify-between text-sm">
                         <span className="text-body">Floating Budget:</span>
                         <span className="font-bold text-number">
@@ -514,7 +511,7 @@ export default function Home() {
                           {formatCurrency((budgetComparison.total_summary.total_budget - recurringStatus.total_amount) - budgetComparison.total_summary.total_spent)}
                         </span>
                       </div>
-                      <div className="flex justify-between text-xs text-muted-custom pt-2 border-t border-pastel-200">
+                      <div className="flex justify-between text-xs text-muted-custom pt-2 border-t border-theme-light">
                         <span>Fixed Recurring/month:</span>
                         <span className="font-semibold">
                           {formatCurrency(recurringStatus.total_amount)}
@@ -539,7 +536,7 @@ export default function Home() {
                                 {percentage.toFixed(0)}%
                               </span>
                             </div>
-                            <div className="w-full bg-pastel-100 rounded-full h-2">
+                            <div className="w-full bg-theme-surface rounded-full h-2">
                               <div
                                 className={cn(
                                   "h-2 rounded-full transition-all",
@@ -678,7 +675,7 @@ export default function Home() {
           <CardContent>
             <div className="space-y-3">
               {/* Display */}
-              <div className="bg-pastel-100 rounded-lg p-4 text-right">
+              <div className="bg-theme-surface rounded-lg p-4 text-right">
                 <div className="text-2xl font-bold text-number break-all">
                   {calcDisplay}
                 </div>
@@ -715,7 +712,7 @@ export default function Home() {
                     key={num}
                     type="button"
                     onClick={() => handleCalcNumber(num)}
-                    className="bg-pastel-200 hover:bg-pastel-300 text-pastel-900 font-bold py-3 px-4 rounded-lg transition-colors"
+                    className="bg-pastel-200 hover:bg-pastel-300 text-primary-foreground font-bold py-3 px-4 rounded-lg transition-colors"
                   >
                     {num}
                   </button>
@@ -734,7 +731,7 @@ export default function Home() {
                     key={num}
                     type="button"
                     onClick={() => handleCalcNumber(num)}
-                    className="bg-pastel-200 hover:bg-pastel-300 text-pastel-900 font-bold py-3 px-4 rounded-lg transition-colors"
+                    className="bg-pastel-200 hover:bg-pastel-300 text-primary-foreground font-bold py-3 px-4 rounded-lg transition-colors"
                   >
                     {num}
                   </button>
@@ -753,7 +750,7 @@ export default function Home() {
                     key={num}
                     type="button"
                     onClick={() => handleCalcNumber(num)}
-                    className="bg-pastel-200 hover:bg-pastel-300 text-pastel-900 font-bold py-3 px-4 rounded-lg transition-colors"
+                    className="bg-pastel-200 hover:bg-pastel-300 text-primary-foreground font-bold py-3 px-4 rounded-lg transition-colors"
                   >
                     {num}
                   </button>
@@ -761,7 +758,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={handleCalcEquals}
-                  className="row-span-2 bg-pastel-pink hover:bg-pastel-rose text-white font-bold py-3 px-4 rounded-lg transition-colors"
+                  className="row-span-2 bg-primary hover:bg-pastel-rose text-white font-bold py-3 px-4 rounded-lg transition-colors"
                 >
                   =
                 </button>
@@ -770,14 +767,14 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => handleCalcNumber('0')}
-                  className="col-span-2 bg-pastel-200 hover:bg-pastel-300 text-pastel-900 font-bold py-3 px-4 rounded-lg transition-colors"
+                  className="col-span-2 bg-pastel-200 hover:bg-pastel-300 text-primary-foreground font-bold py-3 px-4 rounded-lg transition-colors"
                 >
                   0
                 </button>
                 <button
                   type="button"
                   onClick={handleCalcDecimal}
-                  className="bg-pastel-200 hover:bg-pastel-300 text-pastel-900 font-bold py-3 px-4 rounded-lg transition-colors"
+                  className="bg-pastel-200 hover:bg-pastel-300 text-primary-foreground font-bold py-3 px-4 rounded-lg transition-colors"
                 >
                   .
                 </button>
@@ -808,7 +805,7 @@ export default function Home() {
             <CardContent>
               <div className="space-y-6">
                 {/* Total Summary */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-pastel-50 rounded-lg">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-theme-surface rounded-lg">
                   <div>
                     <p className="text-sm text-body">Total Budget</p>
                     <p className="text-2xl font-bold heading-section">
@@ -853,7 +850,7 @@ export default function Home() {
                           </p>
                         </div>
                       </div>
-                      <div className="w-full bg-pastel-100 rounded-full h-4">
+                      <div className="w-full bg-theme-surface rounded-full h-4">
                         <div
                           className={cn(
                             "h-4 rounded-full transition-all",
@@ -869,7 +866,7 @@ export default function Home() {
                 })}
 
                 {/* Edit Budgets */}
-                <div className="border-t border-pastel-200 pt-6 space-y-4">
+                <div className="border-t border-theme-light pt-6 space-y-4">
                   <h3 className="font-semibold heading-section">Edit Monthly Budgets</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {Object.keys(categories).map(category => (
@@ -981,7 +978,7 @@ export default function Home() {
                   return (
                     <div key={rec.id} className={cn(
                       "flex items-center justify-between p-4 rounded-lg border",
-                      isActive ? "border-pastel-200 bg-white" : "border-gray-200 bg-gray-50"
+                      isActive ? "border-theme-light bg-white" : "border-gray-200 bg-gray-50"
                     )}>
                       <div className="flex-1">
                         <div className="flex items-center space-x-2">
@@ -1123,7 +1120,7 @@ export default function Home() {
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
-                        <tr className="border-b border-pastel-200">
+                        <tr className="border-b border-theme-light">
                           <th className="text-left py-3 px-4 heading-section">Date</th>
                           <th className="text-left py-3 px-4 heading-section">Category</th>
                           <th className="text-left py-3 px-4 heading-section">Subcategory</th>
@@ -1135,7 +1132,7 @@ export default function Home() {
                       <tbody>
                         {paginatedExpenses.map(expense => (
                       <tr key={expense.id} className={cn(
-                        "border-b border-pastel-100 hover:bg-pastel-50",
+                        "border-b border-theme-light hover:bg-theme-surface",
                         expense.is_recurring ? "bg-blue-50/50" : ""
                       )}>
                         <td className="py-3 px-4 text-sm text-body">{formatDate(expense.date)}</td>
@@ -1180,7 +1177,7 @@ export default function Home() {
 
                   {/* Pagination Controls */}
                   {totalPages > 1 && (
-                    <div className="flex items-center justify-between mt-6 pt-4 border-t border-pastel-200">
+                    <div className="flex items-center justify-between mt-6 pt-4 border-t border-theme-light">
                       <div className="text-sm text-muted-custom">
                         Showing {startIndex + 1} to {Math.min(endIndex, expenses.length)} of {expenses.length} expenses
                       </div>

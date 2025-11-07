@@ -105,6 +105,14 @@ export const getSpendingByCategory = (startDate?: string, endDate?: string, excl
   return apiCall<{ spending: Record<string, number> }>(`/expenses/by-category${query}`);
 };
 
+export const getSpendingBySubcategory = (startDate?: string, endDate?: string) => {
+  const params = new URLSearchParams();
+  if (startDate) params.append('start_date', startDate);
+  if (endDate) params.append('end_date', endDate);
+  const query = params.toString() ? `?${params}` : '';
+  return apiCall<{ spending: Array<{ category: string; subcategory: string; total: number }> }>(`/expenses/by-subcategory${query}`);
+};
+
 export const getDailySpending = (startDate?: string, endDate?: string) => {
   const params = new URLSearchParams();
   if (startDate) params.append('start_date', startDate);

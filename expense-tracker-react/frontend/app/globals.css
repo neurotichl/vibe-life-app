@@ -50,6 +50,19 @@
     --button-secondary-hover: 300 35% 80%; /* Secondary hover - Darker lavender */
     --button-outline-border: 300 30% 75%; /* Outline button border */
     --button-outline-hover: 300 40% 95%; /* Outline button hover background */
+
+    /* Theme Colors - For backgrounds, borders, accents */
+    --theme-bg-light: 340 100% 98%;     /* Light background */
+    --theme-bg-gradient-1: 205 100% 94%; /* Gradient start - Light blue #BDE0FE */
+    --theme-bg-gradient-2: 350 100% 93%; /* Gradient mid - Soft pink #FFC8DD */
+    --theme-bg-gradient-3: 350 100% 88%; /* Gradient end - Rose #FFAFCC */
+    --theme-bg-mint: 165 60% 95%;       /* Mint background #D8F7F2 */
+
+    --theme-border-light: 300 30% 90%;  /* Light border */
+    --theme-border-medium: 300 30% 75%; /* Medium border */
+
+    --theme-surface: 0 0% 100%;         /* Card/surface white */
+    --theme-surface-hover: 300 40% 95%; /* Surface hover state */
   }
 
   .dark {
@@ -88,32 +101,16 @@
     @apply border-border;
   }
   body {
-    @apply bg-gradient-to-br from-pastel-100 via-pastel-mint/30 to-pastel-pink/40 text-foreground;
+    background: linear-gradient(
+      to bottom right,
+      hsl(var(--theme-bg-gradient-1)),
+      hsl(var(--theme-bg-mint) / 0.3),
+      hsl(var(--theme-bg-gradient-2) / 0.4)
+    );
+    @apply text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
     font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
-}
-
-/* Custom ocean theme enhancements */
-.ocean-gradient {
-  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
-}
-
-.ocean-card {
-  @apply bg-white/90 backdrop-blur-sm border-ocean-200;
-}
-
-/* Pastel theme enhancements */
-.pastel-gradient {
-  background: linear-gradient(135deg, #BDE0FE 0%, #FFC8DD 50%, #FFAFCC 100%);
-}
-
-.pastel-gradient-soft {
-  background: linear-gradient(135deg, #F8FCFF 0%, #E8F4FF 50%, #D8F7F2 100%);
-}
-
-.pastel-card {
-  @apply bg-white/95 backdrop-blur-sm border-pastel-300;
 }
 
 /* Typography Hierarchy Utility Classes */
@@ -147,30 +144,85 @@
   .text-number {
     color: hsl(var(--text-number));
   }
+
+  /* Theme Backgrounds & Borders */
+  .bg-theme-light {
+    background-color: hsl(var(--theme-bg-light));
+  }
+
+  .bg-theme-surface {
+    background-color: hsl(var(--theme-surface));
+  }
+
+  .bg-theme-surface-hover {
+    background-color: hsl(var(--theme-surface-hover));
+  }
+
+  .border-theme-light {
+    border-color: hsl(var(--theme-border-light));
+  }
+
+  .border-theme-medium {
+    border-color: hsl(var(--theme-border-medium));
+  }
 }
 
 /*
-  COLOR THEME CUSTOMIZATION GUIDE:
+  ═══════════════════════════════════════════════════════════════════
+  COLOR THEME CUSTOMIZATION GUIDE
+  ═══════════════════════════════════════════════════════════════════
 
-  To adjust the entire color scheme, edit the CSS variables in :root (lines 38-52):
-
-  TYPOGRAPHY HIERARCHY:
-  --heading-main: Main page title (H1) - Currently warm rose pink
-  --heading-card: Card titles (H2) - Currently medium lavender
-  --heading-section: Section headings (H3) - Currently darker lavender
-  --text-description: Descriptions/subtitles - Currently light purple-gray
-  --text-body: Body text - Currently base purple-gray
-  --text-muted: Muted/less important text - Currently lighter gray
-  --text-number: Numbers/amounts - Currently accent rose
-
-  BUTTON HIERARCHY:
-  --button-primary: Primary action buttons - Currently soft pink
-  --button-primary-hover: Primary button hover state - Currently darker pink
-  --button-secondary: Secondary buttons - Currently light lavender
-  --button-secondary-hover: Secondary hover state - Currently darker lavender
-  --button-outline-border: Outline button borders - Currently medium lavender
-  --button-outline-hover: Outline button hover bg - Currently very light lavender
-
-  Format: HUE SATURATION% LIGHTNESS%
+  To adjust the entire color scheme, edit the CSS variables in :root.
+  All colors use HSL format: HUE SATURATION% LIGHTNESS%
   Example: 340 60% 55% = Rose color at 60% saturation, 55% lightness
+
+  ═══════════════════════════════════════════════════════════════════
+  TYPOGRAPHY HIERARCHY
+  ═══════════════════════════════════════════════════════════════════
+  --heading-main: Main page title (H1) - Warm rose pink
+  --heading-card: Card titles (H2) - Medium lavender
+  --heading-section: Section headings (H3) - Darker lavender
+  --text-description: Descriptions/subtitles - Light purple-gray
+  --text-body: Body text - Base purple-gray
+  --text-muted: Muted/less important text - Lighter gray
+  --text-number: Numbers/amounts - Accent rose
+
+  Usage: .heading-main, .heading-card, .text-body, .text-number, etc.
+
+  ═══════════════════════════════════════════════════════════════════
+  BUTTON HIERARCHY
+  ═══════════════════════════════════════════════════════════════════
+  --button-primary: Primary action buttons - Soft pink
+  --button-primary-hover: Primary button hover state - Darker pink
+  --button-secondary: Secondary buttons - Light lavender
+  --button-secondary-hover: Secondary hover state - Darker lavender
+  --button-outline-border: Outline button borders - Medium lavender
+  --button-outline-hover: Outline button hover bg - Very light lavender
+
+  Usage: Automatically applied in <Button> component
+
+  ═══════════════════════════════════════════════════════════════════
+  THEME COLORS (Backgrounds, Borders, Surfaces)
+  ═══════════════════════════════════════════════════════════════════
+  --theme-bg-light: Light background
+  --theme-bg-gradient-1/2/3: Gradient colors for backgrounds
+  --theme-bg-mint: Mint background accent
+  --theme-border-light: Light borders
+  --theme-border-medium: Medium borders
+  --theme-surface: Card/surface white
+  --theme-surface-hover: Surface hover state
+
+  Usage: .bg-theme-light, .border-theme-light, .bg-theme-surface, etc.
+
+  ═══════════════════════════════════════════════════════════════════
+  HOW TO CHANGE THE ENTIRE THEME
+  ═══════════════════════════════════════════════════════════════════
+  1. Edit the HSL values in :root {...} above
+  2. All components will automatically update
+  3. No need to edit individual component files!
+
+  Example: Want a blue theme? Change:
+  --heading-main: 210 60% 55%  (Blue instead of rose)
+  --button-primary: 210 85% 70%  (Blue button)
+  --theme-bg-gradient-2: 210 100% 93%  (Blue gradient)
 */
